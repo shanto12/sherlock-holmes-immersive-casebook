@@ -1,0 +1,332 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Victorian cinematic palette (design.md §5) */
+    --ink: #0d0b08;
+    --soot: #171310;
+    --umber: #2a211a;
+    --pipe-brown: #3b2d22;
+    --bone: #e9dfc9;
+    --bone-dim: #b8ab8e;
+    --brass: #b08d4c;
+    --gilt: #d4af6a;
+    --fog: #8d9ba6;
+    --fog-deep: #5e6b76;
+    --oxblood: #7a2e2e;
+    --moor-green: #3e4a3d;
+    --dawn-rose: #c8a287;
+
+    /* shadcn tokens mapped onto the dark Victorian ground */
+    --background: 30 24% 4%;
+    --foreground: 40 34% 85%;
+    --card: 30 20% 7%;
+    --card-foreground: 40 34% 85%;
+    --popover: 30 20% 7%;
+    --popover-foreground: 40 34% 85%;
+    --primary: 38 39% 49%;
+    --primary-foreground: 30 24% 4%;
+    --secondary: 28 24% 14%;
+    --secondary-foreground: 40 30% 75%;
+    --muted: 28 24% 14%;
+    --muted-foreground: 37 24% 64%;
+    --accent: 28 24% 14%;
+    --accent-foreground: 40 34% 85%;
+    --destructive: 0 45% 33%;
+    --destructive-foreground: 40 34% 85%;
+    --border: 28 24% 14%;
+    --input: 28 24% 14%;
+    --ring: 38 55% 56%;
+    --radius: 0.25rem;
+    --sidebar-background: 30 24% 4%;
+    --sidebar-foreground: 40 34% 85%;
+    --sidebar-primary: 38 39% 49%;
+    --sidebar-primary-foreground: 30 24% 4%;
+    --sidebar-accent: 28 24% 14%;
+    --sidebar-accent-foreground: 40 34% 85%;
+    --sidebar-border: 28 24% 14%;
+    --sidebar-ring: 38 55% 56%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    background-color: var(--ink);
+    scrollbar-width: thin;
+    scrollbar-color: var(--umber) var(--ink);
+  }
+  body {
+    @apply bg-ink text-bone font-cormorant antialiased;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: rgba(176, 141, 76, 0.35);
+    color: var(--bone);
+  }
+  :focus-visible {
+    outline: 2px solid var(--gilt);
+    outline-offset: 2px;
+  }
+  /* Lenis smooth-scroll recommended styles */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* ---- Atmosphere overlays (design.md §8) ---- */
+  .grain-overlay {
+    position: fixed;
+    inset: -100px;
+    pointer-events: none;
+    z-index: 70;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    animation: grain-step 1s steps(8) infinite;
+  }
+  .vignette-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 65;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      rgba(13, 11, 8, 0.85) 100%
+    );
+  }
+  .fog-bank {
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    width: 140vw;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 55%,
+      rgba(141, 155, 166, 0.16),
+      rgba(141, 155, 166, 0.05) 55%,
+      transparent 75%
+    );
+    filter: blur(28px);
+    will-change: transform;
+  }
+
+  /* ---- Intertitle plate (design.md §9) ---- */
+  .intertitle-border {
+    border: 1px solid rgba(176, 141, 76, 0.7);
+    outline: 1px solid rgba(176, 141, 76, 0.7);
+    outline-offset: 3px;
+  }
+
+  /* ---- Chapter numeral: giant brass outline ---- */
+  .chapter-numeral {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--brass);
+    opacity: 0.22;
+    line-height: 0.8;
+    user-select: none;
+  }
+
+  /* ---- Typewriter caret ---- */
+  .type-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: -0.1em;
+    background: var(--brass);
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
+  /* ---- Hotspot pulse ring ---- */
+  .hotspot-ring::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 9999px;
+    border: 1px solid var(--brass);
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
+  /* ---- Letterbox bars (Reichenbach beat) ---- */
+  .letterbox-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6vh;
+    background: var(--ink);
+    z-index: 30;
+    will-change: transform;
+  }
+
+  /* ---- Cursor spotlight on the deduction portrait ---- */
+  .cursor-spotlight {
+    -webkit-mask-image: radial-gradient(
+      240px at var(--mx, 50%) var(--my, 50%),
+      black 30%,
+      transparent 70%
+    );
+    mask-image: radial-gradient(
+      240px at var(--mx, 50%) var(--my, 50%),
+      black 30%,
+      transparent 70%
+    );
+  }
+}
+
+@layer utilities {
+  .text-shadow-hud {
+    text-shadow: 0 1px 8px rgba(13, 11, 8, 0.9), 0 0 2px rgba(13, 11, 8, 0.9);
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+@keyframes grain-step {
+  0% { background-position: 0 0; }
+  12.5% { background-position: -40px 30px; }
+  25% { background-position: 30px -60px; }
+  37.5% { background-position: -70px -20px; }
+  50% { background-position: 50px 60px; }
+  62.5% { background-position: -20px 80px; }
+  75% { background-position: 80px -40px; }
+  87.5% { background-position: -60px 10px; }
+  100% { background-position: 0 0; }
+}
+
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes fire-breathe {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.18; }
+}
+
+@keyframes smoke-rise {
+  0% { transform: translateY(20px) scale(0.7); opacity: 0; }
+  25% { opacity: 0.3; }
+  100% { transform: translateY(-90px) scale(1.5); opacity: 0; }
+}
+
+@keyframes cloud-tear {
+  0% { transform: translateX(-20%); }
+  100% { transform: translateX(110%); }
+}
+
+@keyframes speed-streak {
+  0% { transform: translateX(20vw); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateX(-120vw); opacity: 0; }
+}
+
+@keyframes lantern-bob {
+  0%, 100% { transform: translateY(-8px); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes eye-flicker {
+  0% { opacity: 0.9; }
+  18% { opacity: 0.55; }
+  33% { opacity: 1; }
+  52% { opacity: 0.62; }
+  71% { opacity: 0.95; }
+  86% { opacity: 0.5; }
+  100% { opacity: 0.88; }
+}
+
+@keyframes hotspot-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes card-in {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes falls-shimmer {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 36px; }
+}
+
+@keyframes web-tremble {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(0.5px, -0.5px); }
+}
+
+/* The Reichenbach silence beat freezes every running CSS animation */
+.frozen * {
+  animation-play-state: paused !important;
+}
+
+@keyframes drift-kb {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.08) translate(-1.5%, 1%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+
+@keyframes dust-float {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(6px, -14px); }
+  66% { transform: translate(-5px, -7px); }
+}
+
+@keyframes fog-drift-a {
+  0% { transform: translateX(-8%); }
+  100% { transform: translateX(8%); }
+}
+
+@keyframes fog-drift-b {
+  0% { transform: translateX(9%); }
+  100% { transform: translateX(-9%); }
+}
+
+/* Custom cursor: hide native pointer on fine-pointer devices when active */
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html.custom-cursor,
+  html.custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay,
+  .hotspot-ring::after,
+  .fog-bank {
+    animation: none !important;
+  }
+}
